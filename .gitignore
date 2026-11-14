@@ -1,0 +1,19 @@
+# macOS / Xcode
+.DS_Store
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.ipa
+
+# Android 构建产物
+android/build/
+android/app/build/
+android/.gradle/
+android/.idea/
+android/local.properties
+android/app/release/
+*.apk
+
+# 其他
+playlists-output/

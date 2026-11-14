@@ -1,0 +1,55 @@
+workflows:
+  ios-unsigned:
+    name: PocketStash iOS Unsigned IPA
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      xcode: latest
+      vars:
+        SCHEME: PocketStash
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: Install XcodeGen
+        script: |
+          brew install xcodegen || brew upgrade xcodegen
+          xcodegen --version
+
+      - name: Generate Xcode project
+        script: |
+          xcodegen generate
+          ls -la
+
+      - name: Build (no code signing)
+        script: |
+          set -o pipefail
+          xcodebuild build \
+            -project PocketStash.xcodeproj \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            ONLY_ACTIVE_ARCH=NO
+
+      - name: Package unsigned IPA
+        script: |
+          set -e
+          APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
+          echo "APP=$APP"
+          test -n "$APP"
+          rm -rf out && mkdir -p out/Payload
+          cp -R "$APP" out/Payload/
+          cd out
+          zip -qry PocketStash-unsigned.ipa Payload
+          ls -lh PocketStash-unsigned.ipa
+          unzip -l PocketStash-unsigned.ipa | head -12
+
+    artifacts:
+      - out/PocketStash-unsigned.ipa
