@@ -78,7 +78,7 @@ final class Scraper {
             return parseItems(html, base: url)
         }
         let html = try await Net.text(url, headers: headers)
-        return parseItems(html, base: url.absoluteString)
+        return parseItems(html, base: url)
     }
 
     // MARK: - 搜索
