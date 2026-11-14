@@ -86,7 +86,7 @@ struct FetchView: View {
                     if let e = errText {
                         Text(e)
                             .font(.footnote)
-                            .foregroundStyle(e.hasPrefix("已切") || e.hasPrefix("正在") ? .secondary : .red)
+                            .foregroundStyle(e.hasPrefix("已切") || e.hasPrefix("正在") ? Color.secondary : Color.red)
                     }
                     ForEach(items) { item in
                         Button {
